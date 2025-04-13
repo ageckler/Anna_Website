@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Book Title Unscramble</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        text-align: center;
+        padding: 40px;
+        background-color: rgb(206, 241, 206);
+      }
+      #scrambled {
+        font-size: 24px;
+        font-weight: bold;
+        margin-bottom: 20px;
+      }
+      input,
+      button {
+        padding: 10px;
+        font-size: 16px;
+      }
+      #result {
+        margin-top: 15px;
+        font-size: 18px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>📚 Book Title Unscramble</h1>
+    <p>Unscramble the letters to guess the book title. Good luck!</p>
+    <div id="scrambled"></div>
+    <div id="timer">⏳ Time left:30s</div>
+    <br />
+    <input type="text" id="guess" placeholder="Your guess here" />
+    <button onclick="checkGuess()">Submit</button>
+    <div id="result"></div>
+    <br />
+    <button onclick="nextWord()">Next</button>
+
+    <script>
+      const books = [
+        "To Kill a Mockingbird",
+        "Pride and Prejudice",
+        "The Great Gatsby",
+        "Harry Potter",
+        "The Hobbit",
+        "1984",
+        "Little Women",
+        "Jane Eyre",
+        "The Catcher in the Rye",
+        "The Lord of the Rings",
+        "The Hunger Games",
+        "Anne of Green Gables",
+        "Daddy Long Legs",
+        "Wuthering Heights",
+        "Sense and Sensibility",
+        "Huck Finn",
+        "Where the Red Fern Grows",
+        "Hatchet",
+        "Tale of Two Cities",
+        "Great Expectations",
+      ];
+
+      let currentBook = "";
+      let timer;
+      let timeLeft = 30;
+
+      function shuffleWord(word) {
+        return word
+          .split("")
+          .sort(() => Math.random() - 0.5)
+          .join("");
+      }
+
+      function scrambleTitle(title) {
+        // keep full words scrambled, not letters across the title
+        return title
+          .split(" ")
+          .map((word) => shuffleWord(word))
+          .join(" ");
+      }
+
+      function nextWord() {
+        document.getElementById("result").textContent = "";
+        document.getElementById("guess").value = "";
+
+        currentBook = books[Math.floor(Math.random() * books.length)];
+        const scrambled = scrambleTitle(currentBook);
+        document.getElementById("scrambled").textContent = scrambled;
+        startTimer();
+      }
+
+      function checkGuess() {
+        const guess = document.getElementById("guess").value.trim();
+        const result = document.getElementById("result");
+        if (guess.toLowerCase() === currentBook.toLowerCase()) {
+          clearInterval(timer);
+          result.textContent = "✅ Correct!";
+          result.style.color = "green";
+        } else {
+          result.textContent = `❌ Nope! It was "${currentBook}".`;
+          result.style.color = "red";
+        }
+      }
+      function startTimer() {
+        clearInterval(timer); // reset if there's already a timer running
+        timeLeft = 30;
+        document.getElementById(
+          "timer"
+        ).textContent = `⏳ Time left: ${timeLeft}s`;
+
+        timer = setInterval(() => {
+          timeLeft--;
+          document.getElementById(
+            "timer"
+          ).textContent = `⏳ Time left: ${timeLeft}s`;
+
+          if (timeLeft === 0) {
+            clearInterval(timer);
+            document.getElementById(
+              "result"
+            ).textContent = `⏱ Time's up! The correct title was "${currentBook}".`;
+            document.getElementById("result").style.color = "orange";
+          }
+        }, 1000);
+      }
+
+      // Load first word on page load
+      window.onload = nextWord;
+    </script>
+  </body>
+</html>
